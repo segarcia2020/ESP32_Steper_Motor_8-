@@ -650,14 +650,14 @@ void comparacion(){
   //double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour
   int $utc=-3;
   int $year=2022;
-  int $month=6;
+  int $month=1;
   int $day=22;
   //int hora_array;   // Variable global
   //int min_array;    // Variable global
   //int seg_array;    // Variable global
   //elevacion_gral;   // Variable global
   //azimut_gral;      // Variable global
-  for(int i = 0; i < 31; i++){
+  for(int i = 0; i < 46; i++){
     // Array perteneciente al 15 de enero 2022
     hora_15[i];
     hora_a(hora_15[i]);
