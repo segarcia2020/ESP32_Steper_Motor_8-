@@ -217,7 +217,11 @@ float azimut_gral;
 double $lat_deg = -33.4377756;  //  
 double $lon_deg = -70.65045027; //  radianes
 int $utc=-3;  
-
+//float $Sunrise_Time ; // Amanece
+//float $Sunset_Time;   // Artardece
+float amanece ; // Amanece
+float atardece;   // Artardece
+float duracion_dia;
 //--------------------------------------------------------------------------------------------------------------
 // Manejo de arreglos extraido de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 //
@@ -237,6 +241,7 @@ float a_azimut[14] = {115,110,100,98,90,60,50,30,20,0,338.98,278.79,254.82,240.9
 String hora[]={};
 //int Id[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44};// son 44
 //-------------------------------------------------------------------------------------------------------------------------------------------
+
 // 15 de Enero 2022
 String hora_15[]={"6:48:32","7:00:00","7:20:00","7:40:00","8:00:00","8:20:00","8:40:00","9:00:00","9:20:00","9:40:00","10:00:00","10:20:00","10:40:00","11:00:00","11:20:00","11:40:00","12:00:00","12:20:00","12:40:00","13:00:00","13:20:00","13:40:00","14:00:00","14:20:00","14:40:00","15:00:00","15:20:00","15:40:00","16:00:00","16:20:00","16:40:00","17:00:00","17:20:00","17:40:00","18:00:00","18:20:00","18:40:00","19:00:00","19:20:00","19:40:00","20:00:00","20:20:00","20:40:00","20:55:18"};
 float a_elevacion_15[46]={1,1.32,5.15,9.06,13.02,17.04,21.1,25.19,29.32,33.47,37.63,41.8,45.97,50.12,54.24,58.31,62.3,66.16,69.8,73.07,75.71,77.31,77.47,76.14,73.68,70.51,66.93,63.11,59.15,55.09,50.97,46.82,42.65,38.48,34.31,30.16,26.02,21.92,17.84,13.81,9.83,5.91,2.06,1,1};
@@ -584,7 +589,38 @@ void loop()
 // debo hacer la diferencia del estado anterior
 // Aqui saco la diferencia si el puntero i>=0 comienzo y voy teniendo en cuenta el valor anterior
 //
+//-----------------------------------------------------------------------------------------------
+// Tomo la hora actual
+// Paso hora y min lat y long y saco la hora que amanece y atardece
+int $utc=-3;
+int $year=2022;
+int $month=1;
+int $day=22;
+//hora_array=8;
+//min_array=;
+//hora_rtc
+  //int hora_array;   // Variable global
+  //int min_array;    // Variable global
+  //int seg_array;    // Variable global
+  //elevacion_gral;   // Variable global
+  //azimut_gral;      // Variable global
+  Serial.print("Hora:  ");
+  Serial.println(hora_rtc);
+  Serial.print("Min:  ");
+  Serial.println(min_rtc);
+  
+  posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+  hora_dec(amanece,"Amanece  ");
+  hora_dec(atardece,"Atardece ");
+  Serial.print("Duracion dia  ");
+  Serial.println(duracion_dia);
 
-  comparacion();
+//duracion_dia=$Sunlight_duration;
+
+
+//-------------------------------------------------
+// Aqui comparo y saco los deltas
+//  comparacion(); // Funciona OK
+//-------------------------------------------------  
   delay(60000);
 }

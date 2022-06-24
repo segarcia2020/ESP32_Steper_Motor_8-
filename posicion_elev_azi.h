@@ -60,6 +60,7 @@ void hora_dec( float $hora_recib, String $texto){
     Serial.print(" : ");
     Serial.println($min_entera);
 }
+
 //------------------------------------------------------------------------------------------------------------
 // Posicion
 // Funcion: double posicion (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min, int imp){
@@ -70,7 +71,7 @@ void hora_dec( float $hora_recib, String $texto){
 // Año, Mes, dia
 // Hora y minutos
 // Flag de impresion 0 no imprime 1 si
-
+//------------------------------------------------------------------------------------------------------------
 double posicion (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min, int imp){
 Serial.print("Hora : ");
 Serial.print($hour);
@@ -249,12 +250,9 @@ elevacion_gral=$Solar_Elevation_Angle;
         Serial.println( " -------------------------------------------------------------------------------------");
 
     }  
-
 //  Rutina de impresion  
 //  Si imp=0 no imprime
 //  Si imp=1 imprime
-
-
     if (imp==1){
 
           Serial.print("Dia Juliano: ");
@@ -348,26 +346,22 @@ elevacion_gral=$Solar_Elevation_Angle;
           Serial.println($Solar_Elevation_corr_atm_refraction);   
 
     }
-///------------------------
 }
+//-------------------------------------------------FIN Funcion -----------------------------------------------------------
 
-//------------------------------------------------------------------------------------------------------------
-// Posicion
-// Funcion: double posicion (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min, int imp){
+
+//------------------------------------------------------------------------------------------------------------------------
+// Posicion_ab
+// Funcion: double posicion_ab (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min)
 // Recibe:
 // Latitud
 // Longuitud
 // UTC
 // Año, Mes, dia
 // Hora y minutos
-// Flag de impresion 0 no imprime 1 si
+// Esta funcion no imprime nada 
 
-double posicion_ab (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min, int imp){
-//Serial.print("Hora : ");
-//Serial.print($hour);
-//Serial.print(":");
-//Serial.println($min);
-
+double posicion_ab (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min){
 float $hora_decimal_solar =((60*$hour+$min));
 $hora_decimal_solar= $hora_decimal_solar/1440;
 float $d1 = 367 * $year -(7 *($year + 5001 + ($month-9)/7))/4 + (275 * $month)/9 + $day + 1729777; //era $d1
@@ -403,22 +397,10 @@ float $Mean_Obliq_Ecliptic=23+(26+((21.448-$J_century*(46.815+$J_century*(0.0005
 //Obliq Corr (deg) Columna R
 float $Obliq_Corr=$Mean_Obliq_Ecliptic+0.00256*cos(deg2rad(125.04-1934.136*$J_century));
 
-//Sun Rt Ascen (deg) Columna S
-//=GRADOS( ojoo!!!!!!!!!!!!!!! que el artang2 es alreves en excel que PHP atan2 (x,y) excell y atan2 (y,x) PHP
-//$Sun_Rt_Ascen=atan2(cos(deg2rad($Sun_app_long)),(cos(deg2rad($Obliq_Corr))*sin(deg2rad($Sun_app_long))));
-// Arduino atan2 en Arduino atan2 ( y , X)
-// PH atan2 (y , x)
-// Excell atan2 (x,y)
-
 float $Sun_Rt_Ascen=atan2((cos(deg2rad($Obliq_Corr))*sin(deg2rad($Sun_app_long))),cos(deg2rad($Sun_app_long)));
 
 float $Sun_Rt_Ascen_1=rad2deg($Sun_Rt_Ascen); // Verificado 19/2/2022
-
-// Sun Declin (deg) Columna T
-// $Sun_Declin =rad2deg(asin(sin(deg2rad($Obliq_Corr))*sin(deg2rad($Sun_app_long))))
 float $Sun_Declin =rad2deg(asin(sin(deg2rad($Obliq_Corr))*sin(deg2rad($Sun_app_long))));
-
-//var y Columna U
 float $var_y=tan(deg2rad($Obliq_Corr/2))*tan(deg2rad($Obliq_Corr/2)); // Verificada OK 19/2/2022
 
 //----------------------------------------------------------------------------------------------------------------
@@ -452,17 +434,20 @@ float $Solar_noon_LST=(720-4*$lon_deg-$Eq_of_time+$utc*60)/1440  ;
 
 // Sunrise Time (LST) Columna Y
 float $Sunrise_Time=$Solar_noon_LST-$Ha*4/1440;
+amanece=$Sunrise_Time;
 // $hour_s =date("h",$Sunrise_Time);
 // $min_s =date("i",$Sunrise_Time);
 //---------------------------------------------------------------------------------------------------------------------sacado 22/6/22
 //hora_dec($Sunrise_Time,"Amanece  ");
-// Sunset Time (LST) Columna z
+//Sunset Time (LST) Columna z
 // =X81+W81*4/1440 
 float $Sunset_Time=$Solar_noon_LST+$Ha*4/1440;
+atardece=$Sunset_Time;
 //---------------------------------------------------------------------------------------------------------------------sacado 22/6/22
 //hora_dec( $Sunset_Time, "Artardece  ");
 //Sunlight Duration (minutes)  en miuntos AA -  8*W81
 float  $Sunlight_duration=8*$Ha;
+duracion_dia=$Sunlight_duration;
 
 //---------------------------------------------------------------
 // True Solar Time (min) Columna AB
@@ -471,7 +456,6 @@ float   $True_Solar_Time_2=$hora_decimal_solar;//$hour*1440;
 float   $True_Solar_Time_5=$hora_decimal_solar*1440;
 float   $True_Solar_Time_3=$Eq_of_time; //OK
 float   $True_Solar_Time_4=4*$lon_deg-60*$utc; //oK
-//print (" TST_1 ").$True_Solar_Time_1." TST_2 ".$True_Solar_Time_2." TST_3 ".$True_Solar_Time_3." TST_4".$True_Solar_Time_4."  tst_5 ".$True_Solar_Time_5."<br>";
 $True_Solar_Time_1=$hora_decimal_solar*1440+$Eq_of_time+4*$lon_deg-60*$utc;
 // ojo!!!!!!!!!!!!!! evaluar el fmod!!!
 float  $True_Solar_Time=fmod($True_Solar_Time_1,1440);
@@ -486,13 +470,8 @@ float $Hour_Angle_deg;
   }else{
        $Hour_Angle_deg= ($True_Solar_Time/4)-180;   
   }
-  // print(" Hour angle :  ");
-  // println($Hour_Angle_deg);
 
 //---------------------------------------------------------------
-// Solar Zenith Angle (deg) Columna AD
-// $Solar_Zenith_Angle=GRADOS(ACOS(.....)
-
 float $Solar_Zenith_Angle_1 =sin(deg2rad($lat_deg))*sin(deg2rad($Sun_Declin));
 float $Solar_Zenith_Angle_2 =cos(deg2rad($lat_deg))*cos(deg2rad($Sun_Declin))*cos(deg2rad($Hour_Angle_deg));
 float $Solar_Zenith_Angle=rad2deg(acos($Solar_Zenith_Angle_1+$Solar_Zenith_Angle_2));
@@ -518,14 +497,6 @@ elevacion_gral=$Solar_Elevation_Angle;
         //echo " Solar_Azimuth_Angle 3 +180: ".$Solar_Azimuth_Angle_3."<br>";
         float $Solar_Azimuth_Angle_4=fmod($Solar_Azimuth_Angle_3,360);
         azimut_gral=$Solar_Azimuth_Angle_4;
-        
-        //Serial.println( " -------------------------------------------------------------------------------------");
-        //Serial.print ( " Solar_Elevation_Angle corregido por refraccion:  ");
-        //Serial.println($Solar_Elevation_corr_atm_refraction);
-        //Serial.print( " Solar_Azimuth_Angle 4:  ");
-        //Serial.println($Solar_Azimuth_Angle_4);
-        //Serial.println( " -------------------------------------------------------------------------------------");
-
     }else{
         //Serial.println(" Hour_Angle_deg<0  ");
         float  $Solar_Azimuth_Angle_5=(((sin(deg2rad($lat_deg))*cos(deg2rad($Solar_Zenith_Angle)))-sin(deg2rad($Sun_Declin)))/(cos(deg2rad($lat_deg))*sin(deg2rad($Solar_Zenith_Angle))));
@@ -533,115 +504,8 @@ elevacion_gral=$Solar_Elevation_Angle;
         $Solar_Azimuth_Angle_5=540-$Solar_Azimuth_Angle_5;
         $Solar_Azimuth_Angle_5=fmod($Solar_Azimuth_Angle_5,360);
         azimut_gral=$Solar_Azimuth_Angle_5;
-        
-        //Serial.println( " -------------------------------------------------------------------------------------");
-        //Serial.print ( " Solar_Elevation_Angle corregido por refraccion:  ");
-        //Serial.println($Solar_Elevation_corr_atm_refraction);
-        //Serial.print (" Solar_Azimuth_Angle 5:  ");
-        //Serial.println($Solar_Azimuth_Angle_5);
-        //Serial.println( " -------------------------------------------------------------------------------------");
-
     }  
 
-//  Rutina de impresion  
-//  Si imp=0 no imprime
-//  Si imp=1 imprime
-
-
-    if (imp==1){
-
-          Serial.print("Dia Juliano: ");
-          Serial.print($d);
-          Serial.print("  JN:  ");
-          Serial.print($d1);
-          Serial.print("  Julian Cenruty:  ");
-          Serial.println($J_century);
-          
-          Serial.print("Geom Mean Long SUn (deg):  ");
-          Serial.print($residuo);
-          Serial.print("  Geom_Mean Anom sun:  ");
-          Serial.println($geom_Mean_A_sun);
-          Serial.print("  $Sun_Declin:  ");
-          Serial.println($Sun_Declin);
-          Serial.print(" EEO:  ");
-          Serial.print($EEO,5);
-
-          //Sun rad vector: 0.9997221507465 Sun_app_long: 341.48982184728
-          Serial.print("$Sun rad vector:  ");
-          Serial.println(Sun_rad_vec);
-          Serial.print("Sun_app_long:  ");
-          Serial.println($Sun_app_long);
-          //Sun_Rt_Ascen: 0.043029001994514 Eq of Time(minutos): -12.201642904063
-          Serial.print("Sun_Rt_Ascen:  ");
-          Serial.print($Sun_Rt_Ascen_1);
-          Serial.print(" var_y  ");
-          Serial.println($var_y,4); // OK verificado
-          Serial.print("  Eq of Time(minutos):  ");
-          Serial.println($Eq_of_time);
-          // debug Eq of time........
-          Serial.print("  a:  ");
-          Serial.print(a,7);
-          Serial.print("  a1:  ");
-          Serial.print(a1,7);
-          Serial.print("  a2:  ");
-          Serial.println(a2,7);
-
-          Serial.print("  w:  ");
-          Serial.print(w,7);
-          Serial.print("  w1:  ");
-          Serial.println(w1,7);
-          
-          Serial.print("  Eq1:  ");
-          Serial.print($Eq_of_time_1,7);
-          Serial.print("  Eq2:  ");
-          Serial.print($Eq_of_time_2,7);
-          Serial.print("  Eq3:  ");
-          Serial.print($Eq_of_time_3,7);
-          Serial.print("  Eq4:  ");
-          Serial.print($Eq_of_time_4,7);
-          Serial.print("  Eq5:  ");
-          Serial.println($Eq_of_time_5,7); // muestra 5 digitos
-          
-          Serial.print("HA:  ");
-          Serial.print($Ha);
-          Serial.print("  h1:  ");
-          Serial.print($Ha_1);
-          Serial.print("   h2 :  ");
-          Serial.println($Ha_2);
-          Serial.print("Sun_noon_LST:  ");
-          Serial.println ($Solar_noon_LST);  
-          Serial.print ("Sunrise time :  ");
-          Serial.println($Sunrise_Time);  
-          hora_dec( $Sunrise_Time,"Amanece  ");
-          Serial.print( "Sunset time :  ");
-          Serial.println($Sunset_Time);
-          hora_dec( $Sunset_Time,"Atardece  ");
-          Serial.print( " TST_1 ");
-          Serial.print($True_Solar_Time_1);
-          Serial.print(" TST_2 ");
-          Serial.print($True_Solar_Time_2);
-          Serial.print(" TST_3 ");
-          Serial.print($True_Solar_Time_3);
-          Serial.print(" TST_4");
-          Serial.print($True_Solar_Time_4);
-          Serial.print(" tst_5 ");
-          Serial.println($True_Solar_Time_5);
-          Serial.print("Sun light duration :  ");
-          Serial.println($Sunlight_duration);
-          // True Solar Time : 1025.1965560159
-          Serial.print( "True Solar Time :  ");
-          Serial.println($True_Solar_Time);
-          Serial.print( "Solar_Zenith_Angle:  ");
-          Serial.print($Solar_Zenith_Angle);
-          //Solar_Elevation_Angle: 15.405573438375
-          Serial.print( "Solar_Elevation_Angle:   ");
-          Serial.println($Solar_Elevation_Angle);
-          //Solar_Elevation_Angle corregido por refraccion: 15.495573438375
-          Serial.print("Solar_Elevation_Angle corregido por refraccion:  ");
-          Serial.println($Solar_Elevation_corr_atm_refraction);   
-
-    }
-///------------------------
 }
 
 
@@ -664,7 +528,7 @@ void comparacion(){
     a_elevacion_15[i];
     a_azimut_15[i];
     
-    posicion_ab ($lat_deg,$lon_deg,$utc,$year,$month,$day,hora_array,min_array, 0);
+    posicion_ab ($lat_deg,$lon_deg,$utc,$year,$month,$day,hora_array,min_array);
     //Serial.print("---------------------------------------------------------------------------------------------------------------------------------- ");
     /*
     Serial.println();
