@@ -610,12 +610,16 @@ int $day=22;
   Serial.println(min_rtc);
   
   posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+  Serial.print("Amanece antes de la funcion  ");
+  Serial.println(amanece);
+  Serial.print("Atardece antes de la funcion  ");
+  Serial.println(atardece);
   hora_dec(amanece,"Amanece  ");
   hora_dec(atardece,"Atardece ");
   Serial.print("Duracion dia  ");
   Serial.println(duracion_dia);
 
-//duracion_dia=$Sunlight_duration;
+// duracion_dia=$Sunlight_duration;
 
 
 //-------------------------------------------------
