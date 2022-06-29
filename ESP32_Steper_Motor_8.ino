@@ -214,6 +214,11 @@ float $Solar_Azimuth_Angle_4;
 float $Solar_Azimuth_Angle_5;
 float elevacion_gral;
 float azimut_gral;
+float elevacion_gral_a_1;
+float azimut_gral_a_1;
+float elevacion_gral_a_2;
+float azimut_gral_a_2;
+
 double $lat_deg = -33.4377756;  //  
 double $lon_deg = -70.65045027; //  radianes
 int $utc=-3;  
@@ -222,6 +227,20 @@ int $utc=-3;
 float amanece ; // Amanece
 float atardece;   // Artardece
 float duracion_dia;
+
+int hora_global;
+int min_global;
+
+int hora_amanece;
+int min_amanece;
+
+int hora_atardece;
+int min_atardece;
+int flag_primera_vez_dia=0;
+int flag_amanece=0;
+int flag_atardece=0;
+float dif_ele;
+float dif_azi;
 //--------------------------------------------------------------------------------------------------------------
 // Manejo de arreglos extraido de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 //
@@ -581,10 +600,12 @@ void loop()
 // lamo funcion de impresion de AN's
 
   print_AN();
+/*
   Serial.print("ind:  ");
   Serial.println(ind);
   Serial.print("ind_det:  ");
   Serial.println(ind_det); 
+  */
    
 // debo hacer la diferencia del estado anterior
 // Aqui saco la diferencia si el puntero i>=0 comienzo y voy teniendo en cuenta el valor anterior
@@ -599,26 +620,135 @@ int $day=22;
 //hora_array=8;
 //min_array=;
 //hora_rtc
-  //int hora_array;   // Variable global
-  //int min_array;    // Variable global
-  //int seg_array;    // Variable global
-  //elevacion_gral;   // Variable global
-  //azimut_gral;      // Variable global
-  Serial.print("Hora:  ");
+//int hora_array;   // Variable global
+//int min_array;    // Variable global
+//int seg_array;    // Variable global
+//elevacion_gral;   // Variable global
+//azimut_gral;      // Variable global
+//-------------------------------------------------------------------------------------------------------
+// Analisis de fecha
+
+  Serial.print("Hora rtc (Actual):  ");
   Serial.println(hora_rtc);
-  Serial.print("Min:  ");
+  Serial.print("Min rtc (Actual):  ");
   Serial.println(min_rtc);
-  
+  // Llamada a la funcion traigp la hora y minutos de amanece y atardece
   posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+  /*
   Serial.print("Amanece antes de la funcion  ");
   Serial.println(amanece);
   Serial.print("Atardece antes de la funcion  ");
   Serial.println(atardece);
+  */
+  
   hora_dec(amanece,"Amanece  ");
+  hora_amanece=hora_global;
+  min_amanece=min_global;
+  /*
+  Serial.print("Amanece a hora  ");
+  Serial.println(hora_amanece);
+  Serial.print("min  ");
+  Serial.println(min_amanece);
+  */
   hora_dec(atardece,"Atardece ");
+  hora_atardece=hora_global;
+  min_atardece=min_global;
+/*
+  Serial.print("Atardece a hora  ");
+  Serial.println(hora_atardece);
+  Serial.print("min  ");
+  Serial.println(min_atardece);
+  
+
   Serial.print("Duracion dia  ");
   Serial.println(duracion_dia);
+*/
 
+//-------------------------------------------------------------------------------------------------------
+// Estamos en el dia ????
+
+  if (hora_rtc>=hora_amanece){
+    //if (min_rtc>=min_amanece){
+      Serial.print("Estamos mas alla de la hora del amanecer  ");
+      Serial.println();
+      flag_amanece=1; 
+    }else{
+      flag_amanece=0;
+    }
+    
+    if (hora_rtc<=hora_atardece){
+     // if (min_rtc<=min_atardece){
+        Serial.print("Por debajo de la hora de atardecer  ");
+        Serial.println();
+        flag_atardece=1;
+     }else{
+      flag_atardece=0;
+    }
+  
+
+//int flag_primera_vez_dia=0;
+//int flag_amanece=0;
+//int flag_atardece=0;
+
+// Estamos en el dia...................................................
+ if ((flag_amanece==1)&&(flag_atardece==1)){
+      Serial.print("Estoy en el dia  ");
+      Serial.println();
+       if (flag_primera_vez_dia==0){
+         Serial.print("primera vez  ");
+         Serial.println();
+         posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+         elevacion_gral_a_1=elevacion_gral;
+         azimut_gral_a_1=azimut_gral;
+
+         Serial.print("Elevacion  ");
+         Serial.println(elevacion_gral_a_1);
+     
+         Serial.print("Azimut  ");
+         Serial.println(azimut_gral_a_1);
+         flag_primera_vez_dia=flag_primera_vez_dia+1;
+         Serial.print("Flag  ");
+         Serial.println(flag_primera_vez_dia);
+         
+       }else{
+          Serial.print("next  ");
+          Serial.println();
+        // Aqui estamos incremando .....
+         posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+         //Serial.print("Elevacion..na  ");
+         //Serial.println(elevacion_gral);
+         //Serial.print("Azimut..na  ");
+         //Serial.println(azimut_gral);
+         // Me da el mismo valor eleva y azimut no se que pasa
+         azimut_gral_a_2=azimut_gral;
+         elevacion_gral_a_2=elevacion_gral;
+         
+      
+         Serial.print("Elevacion..  ");
+         Serial.println(elevacion_gral_a_2);
+         Serial.print("Azimut..  ");
+         Serial.println(azimut_gral_a_2);
+         dif_ele= elevacion_gral_a_2-elevacion_gral_a_1;
+         dif_azi=azimut_gral_a_2-azimut_gral_a_1;
+         flag_primera_vez_dia=flag_primera_vez_dia+1;
+         Serial.print("Dif Elevacion..  ");
+         Serial.println(dif_ele);
+         Serial.print("Dif Azimut..  ");
+         Serial.println(dif_azi);
+         Serial.print("Flag  ");
+         Serial.println(flag_primera_vez_dia);
+         elevacion_gral_a_1=elevacion_gral_a_2;
+         azimut_gral_a_1=azimut_gral_a_2;
+       }
+      
+ }else{
+  flag_primera_vez_dia=0; // reseteo el flag
+ }
+//-------------------------------------------------------------------------------------------------------
+
+
+
+//-------------------------------------------------------------------------------------------------------
 // duracion_dia=$Sunlight_duration;
 
 

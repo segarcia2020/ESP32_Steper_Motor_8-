@@ -51,8 +51,10 @@ void hora_dec( float $hora_recib, String $texto){
     float $minutos_tot=1400*$hora_recib;
     float $hora_decimal=$minutos_tot/60;
     int $hora_entera=abs($hora_decimal);
+    hora_global=$hora_entera;
     float $min_dec=$hora_decimal-$hora_entera;
     int $min_entera=abs($min_dec*60);
+    min_global=$min_entera;
     //echo " Hora recibida : ".$hora_recib." Hora decimal  ".$hora_decimal." Hora entera: ".$hora_entera." Minutos decimales ".$min_dec."<br>";
     Serial.print( $texto);
     Serial.print(" a las ");
