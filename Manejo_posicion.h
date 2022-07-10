@@ -1,4 +1,35 @@
 
+
+void imprima_fecha_encoder(){
+    DateTime fecha = rtc.now();
+    Serial.print("RTC   ");
+    Serial.print(fecha.day());
+    Serial.print('/');
+    Serial.print(fecha.month());
+    Serial.print('/');
+    Serial.print(fecha.year());
+    Serial.print(" ");
+    Serial.print(fecha.hour());
+    Serial.print(':');
+    hora_rtc=fecha.hour();
+    Serial.print(fecha.minute());
+    Serial.print(':');
+    min_rtc=fecha.minute();
+    Serial.print(fecha.second());
+    sec_rtc=fecha.second();
+    Serial.print(" -->");
+    encoder = preferences.getUInt("encoder", 0);
+    Serial.print("Encoder: ");
+    Serial.print(encoder);
+    Serial.println(version_esp32);
+}
+
+void retardo_10_min(){
+  for(int i=0;i<=10;i++){
+    delay (60000);//60000
+  }
+}
+
 //-------------------------------------------------------------------------------------------------
 // Funcion: void inicializacion_vector()
 // inicializa los vectores
@@ -308,6 +339,7 @@ void envia_mensaje_sms(String tel, float tempC){
 // estamos usando esta version
 
 void envia() {
+    SerialMon.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     SerialMon.print("Connecting to APN: ");
     SerialMon.print(apn);
     if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
@@ -322,8 +354,8 @@ void envia() {
       SerialMon.println(" OK");
       // Making an HTTP POST request
       SerialMon.println("Performing HTTP POST request...");    
-       String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie)+"&temp=" +String(tempC)+"&cam1=" +String(hora_rtc)+"&cam2=" +String(min_rtc)+"&cam3=" +String(encoder);
-
+       //String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie)+"&temp=" +String(tempC)+"&cam1=" +String(hora_rtc)+"&cam2=" +String(min_rtc)+"&cam3=" +String(encoder);
+        String datos = "&elevacion=" + String(elevacion_gral) + "&azimut=" + String(azimut_gral)+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie)+"&temp=" +String(tempC)+"&cam1=" +String(hora_rtc)+"&cam2=" +String(min_rtc)+"&cam3=" +String(encoder);
       //String datos = "&elevacion=" + String(2.29) + "&azimut=" + String(105.20)+ "&an0=" + String(100) + "&an1=" + String(200) + "&an2=" + String(300)+"&an3=" + String(400) +"&Serie=" +String(500);
       SerialMon.println(datos);
       SerialMon.print(F("Performing HTTPS GET request... "));
@@ -370,9 +402,12 @@ void envia() {
       SerialMon.println(F("Server disconnected"));
       modem.gprsDisconnect();
       SerialMon.println(F("GPRS disconnected"));
+      SerialMon.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
   }
 }
+
+
 
 
 //------------------------------------------------------------------------------
@@ -434,13 +469,14 @@ void temporizador() {
       // Prepare your HTTP POST request data (Temperature in Celsius degrees)
       // Para usar BME
       // displaybme();
+      String datos =" "; 
       // String datos = "&satelites=" + String(satelites) + "&velocidad=" + String(velocidad)+ "&curso=" + String(curso) + "&altitud=" + String(altitud) + "&latitud=" + String(latitud,6) +"&Serie=" +String(serie) + "&longuitud=" + String(longuitud,6);
      
       
       //$sql ="INSERT INTO `stirling_1` (`ID`, `fecha`, `Serie`, `elevacion`, `azimut`, `an0`, `an1`, `an2`, `an3`, `temp`, `cam1`, `cam2`, `cam3`, `cam4`, `cam5`) VALUES (NULL, CURRENT_DATE(), '100', '23.56', '189.00', '123', '145', '156', '167', '200', '0', '0', '0', '0', '0')";
       //a_elevacion[ind],abs(dif_elevacion),flag_giro_elev,a_azimut[ind]
       
-      String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie);
+      //String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie);
       //String datos = "&elevacion=" + String(2.29) + "&azimut=" + String(105.20)+ "&an0=" + String(100) + "&an1=" + String(200) + "&an2=" + String(300)+"&an3=" + String(400) +"&Serie=" +String(500);
       // Prepare your HTTP POST request data (Temperature in Fahrenheit degrees)
       // Para BME250 --- String httpRequestData = "api_key=" + apiKeyValue + "&value1=" + String(1.8 * bme.readTemperature() + 32)
@@ -508,7 +544,7 @@ void temporizador() {
 //---------------------------------------------------------------------------------------------------
 // Elevacion
 // Función: void elevacion (int grado_giro, bool flag_giro)
-// recibe los grados de giro y lfag de giro
+// recibe los grados de giro y el fag de giro
 // giro LOW
 // giro HIGH 
 // 
@@ -971,11 +1007,12 @@ void printDate(DateTime date){
    Serial.print(date.second(), DEC);
    Serial.print(" -->");
 }
+
 //--------------------------------------------------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------------------------------------------------
-// Esta funcion esta pensada si el dispositivo esta vivo, sobre de noche
+// Esta funcion esta pensada si el dispositivo esta vivo, sobre todo en la noche
 //
 // Funcion: void is_alive()
 // Aqui podriamos intentar un mensaje cada hora
@@ -983,6 +1020,11 @@ void printDate(DateTime date){
 // Verificando que esta alive
 // 
 void is_alive(){
+
+//hora_amanece;
+//min_amanece;
+//hora_atardece;
+//min_atardece;
    
     if ((hora_rtc==1)&&(min_rtc==15)){
       if (( sec_rtc>=12)&&(sec_rtc<=16)){
@@ -1022,6 +1064,10 @@ void is_alive(){
       }
     }
 }
+
+
+
+
 
 //--------------------------------------------------------------------------------------------------------------
 // Funcion de almacenamiento del vector
@@ -1073,4 +1119,33 @@ void hora_min(int indice, int imp){
       //Serial.print(":");
       //Serial.println((seg_array_min));
     }
+}
+
+//--------------------------------------------------------------------------------------------------------------
+// Funcion de posicionamiento de motores
+// 
+// 
+// 
+// 
+
+void posicionar_motores(){
+    encoder = preferences.getUInt("encoder", 0); // SAco el valor del encoder
+    Serial.print("Buscando 90 elevacion....");
+    buscar_noventa_elevacion();
+    Serial.print("Buscando 0 elevacion....");
+    buscar_cero_elevacion();
+    //Serial.print("Buscando 180 azimut....");
+    //buscar_180_azimut(20);
+    Serial.print("Buscando cero azimut/ encoder ....");
+    Serial.println(encoder);
+     
+    if ((encoder>=0) && (encoder <=180)){
+      Serial.print("Buscar_cero 20 grados....");
+      buscar_cero_azimut(20);
+    }
+    if ((encoder<=360) && (encoder >=250)){
+      Serial.print("Buscar_cero 250 grados....");
+      buscar_cero_azimut(250);
+    }
+
 }

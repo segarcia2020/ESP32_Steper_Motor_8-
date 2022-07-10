@@ -47,7 +47,7 @@ double rad2deg (double angulo){
 // Recibe hora y string 
 // 
 
-void hora_dec( float $hora_recib, String $texto){
+void hora_dec( float $hora_recib, String $texto, int imp){
     float $minutos_tot=1400*$hora_recib;
     float $hora_decimal=$minutos_tot/60;
     int $hora_entera=abs($hora_decimal);
@@ -56,11 +56,14 @@ void hora_dec( float $hora_recib, String $texto){
     int $min_entera=abs($min_dec*60);
     min_global=$min_entera;
     //echo " Hora recibida : ".$hora_recib." Hora decimal  ".$hora_decimal." Hora entera: ".$hora_entera." Minutos decimales ".$min_dec."<br>";
+    if (imp==1){
     Serial.print( $texto);
     Serial.print(" a las ");
     Serial.print($hora_entera);
     Serial.print(" : ");
     Serial.println($min_entera);
+    }
+    
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -166,11 +169,11 @@ float $Solar_noon_LST=(720-4*$lon_deg-$Eq_of_time+$utc*60)/1440  ;
 float $Sunrise_Time=$Solar_noon_LST-$Ha*4/1440;
 // $hour_s =date("h",$Sunrise_Time);
 // $min_s =date("i",$Sunrise_Time);
-hora_dec($Sunrise_Time,"Amanece  ");
+hora_dec($Sunrise_Time,"Amanece  ",1);
 // Sunset Time (LST) Columna z
 // =X81+W81*4/1440 
 float $Sunset_Time=$Solar_noon_LST+$Ha*4/1440;
-hora_dec( $Sunset_Time, "Artardece  ");
+hora_dec( $Sunset_Time, "Artardece  ",1);
 //Sunlight Duration (minutes)  en miuntos AA -  8*W81
 float  $Sunlight_duration=8*$Ha;
 
@@ -319,10 +322,10 @@ elevacion_gral=$Solar_Elevation_Angle;
           Serial.println ($Solar_noon_LST);  
           Serial.print ("Sunrise time :  ");
           Serial.println($Sunrise_Time);  
-          hora_dec( $Sunrise_Time,"Amanece  ");
+          hora_dec( $Sunrise_Time,"Amanece  ",1);
           Serial.print( "Sunset time :  ");
           Serial.println($Sunset_Time);
-          hora_dec( $Sunset_Time,"Atardece  ");
+          hora_dec( $Sunset_Time,"Atardece  ",1);
           Serial.print( " TST_1 ");
           Serial.print($True_Solar_Time_1);
           Serial.print(" TST_2 ");
@@ -518,11 +521,6 @@ void comparacion(){
   int $year=2022;
   int $month=1;
   int $day=22;
-  //int hora_array;   // Variable global
-  //int min_array;    // Variable global
-  //int seg_array;    // Variable global
-  //elevacion_gral;   // Variable global
-  //azimut_gral;      // Variable global
   for(int i = 0; i < 46; i++){
     // Array perteneciente al 15 de enero 2022
     hora_15[i];
@@ -532,23 +530,6 @@ void comparacion(){
     
     posicion_ab ($lat_deg,$lon_deg,$utc,$year,$month,$day,hora_array,min_array);
     //Serial.print("---------------------------------------------------------------------------------------------------------------------------------- ");
-    /*
-    Serial.println();
-    Serial.print("indice: ");
-    Serial.print(i);
-    Serial.print(" hora: ");
-    Serial.print(hora_array);
-    Serial.print(" Min: ");
-    Serial.print(min_array);
-    Serial.print(" Elevacion array: ");
-    Serial.print(a_elevacion_15[i]); 
-    Serial.print(" Elevacion calculado: ");
-    Serial.print(elevacion_gral); 
-    Serial.print(" Azimut array: ");
-    Serial.print(a_azimut_15[i]); 
-    Serial.print(" Azimut calculado: ");
-    Serial.println(azimut_gral); 
-*/
     //Serial.println();
     Serial.print("indice: ");
     Serial.print(i);

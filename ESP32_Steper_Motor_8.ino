@@ -104,7 +104,7 @@ TinyGPSPlus gps;
 ///-------------------------------------------------------------------------------------------------------
 //      SIMULACION y Version !!
 //
-#define Simulacion 1   // 0 sin simulacion, 1 con simulacion
+#define Simulacion 0   // 0 sin simulacion, 1 con simulacion
 #define version_esp32 " - V: EPS32_Steper_Motor_8"
 //
 ///-------------------------------------------------------------------------------------------------------
@@ -171,7 +171,6 @@ HttpClient http(client, server, port);  // Esto tambien
 #define AN1 13
 #define AN2 39
 #define AN3 34
-//#define idd  29 // indice
 
 //--------------------------------------------------------------------------------------------------------------
 // Definicion de pines de conexion con RTC
@@ -241,75 +240,22 @@ int flag_amanece=0;
 int flag_atardece=0;
 float dif_ele;
 float dif_azi;
+int min_noche=0;
+
 //--------------------------------------------------------------------------------------------------------------
 // Manejo de arreglos extraido de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 //
 //
 //--------------------------------------------------------------------------------------------------------------
 //int const indice_max = 44;
-/*
-int Id[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14};
-//float r_elevacion[] = {10,20,30,40,50,60,70,80,90,40,30,22,13 ,4}; //altura en grados
-//float r_azimut[] = {170,140,120,110,90,60,50,30,20,0, 33.98,278.79,254.82,240.97};     //azimut en grados
-String hora[14]={"4:25:00","4:26:00","4:26:30","4:27:00","4:27:30","4:28:00","4:28:30","4:29:00","4:30:00","4:30:30","4:31:00","4:31:30","4:32:00","4:32:30"};
-float a_elevacion[14] = {10,20,30,40,50,60,70,80,85,40,30,22,15,5}; //altura en grados !!!!! 15 de Enero detectamos que cuando llega a 90 grados se queda alli el mismo problema que tuve con el azimuto
-float a_azimut[14] = {115,110,100,98,90,60,50,30,20,0,338.98,278.79,254.82,240.97};     //azimut en grados
-*/
-
 // 15 de Enero 2022
-String hora[]={};
-//int Id[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44};// son 44
-//-------------------------------------------------------------------------------------------------------------------------------------------
 
-// 15 de Enero 2022
 String hora_15[]={"6:48:32","7:00:00","7:20:00","7:40:00","8:00:00","8:20:00","8:40:00","9:00:00","9:20:00","9:40:00","10:00:00","10:20:00","10:40:00","11:00:00","11:20:00","11:40:00","12:00:00","12:20:00","12:40:00","13:00:00","13:20:00","13:40:00","14:00:00","14:20:00","14:40:00","15:00:00","15:20:00","15:40:00","16:00:00","16:20:00","16:40:00","17:00:00","17:20:00","17:40:00","18:00:00","18:20:00","18:40:00","19:00:00","19:20:00","19:40:00","20:00:00","20:20:00","20:40:00","20:55:18"};
 float a_elevacion_15[46]={1,1.32,5.15,9.06,13.02,17.04,21.1,25.19,29.32,33.47,37.63,41.8,45.97,50.12,54.24,58.31,62.3,66.16,69.8,73.07,75.71,77.31,77.47,76.14,73.68,70.51,66.93,63.11,59.15,55.09,50.97,46.82,42.65,38.48,34.31,30.16,26.02,21.92,17.84,13.81,9.83,5.91,2.06,1,1};
 float a_azimut_15[46]={116.16,114.58,111.92,109.34,106.84,104.38,101.95,99.53,97.08,94.58,91.99,89.27,86.36,83.18,79.61,75.51,70.61,64.56,56.73,46.23,31.85,12.96,351.48,331.77,316.46,305.25,296.96,290.6,285.5,281.26,277.6,274.35,271.39,268.64,266.03,263.51,261.06,258.63,256.21,253.76,251.27,248.71,246.07,243.98,242};
-
-// 22/6/22
-//String hora_15[]={"9:40:43","10:00:00","10:20:00","10:40:00","11:00:00","11:20:00","11:40:00","12:00:00","12:20:00","12:40:00","13:00:00","13:20:00","13:40:00","14:00:00","14:20:00","14:40:00","15:00:00","15:20:00","15:40:00","16:00:00","16:20:00","16:40:00","17:00:00","17:20:00","17:40:00","18:00:00","18:20:00","18:40:00","19:00:00","19:20:00","19:40:00","19:57:17"};
-//float a_elevacion_15[32]={-0.833,2.8,6.49,10.07,13.53,16.84,19.99,22.96,25.7,28.21,30.44,32.36,33.94,35.15,35.97,36.37,36.35,35.9,35.05,33.8,32.18,30.23,27.97,25.44,22.67,19.69,16.52,13.19,9.72,6.13,2.43,-0.833};
-//float a_azimut_15[32]={66.15,63.46,60.55,57.49,54.24,50.8,47.14,43.23,39.05,34.6,29.86,24.84,19.57,14.06,8.38,2.59,356.76,350.97,345.31,339.82,334.57,329.58,324.87,320.44,316.29,312.4,308.76,305.34,302.11,299.06,296.15,293.75};
-
-
-// estaba en 46
-
-
-//------------------------------------30 de Octubre -------------------------
-//int Id[]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28};
-//String hora[]={"5:44:25","6:00:00","6:30:00","7:00:00","7:30:00","8:00:00","8:30:00","9:00:00","9:30:00","10:00:00","10:30:00","11:00:00","11:30:00","12:00:00","12:30:00","13:00:00","13:30:00","14:00:00","14:30:00","15:00:00","15:30:00","16:00:00","16:30:00","17:00:00","17:30:00","18:00:00","18:30:00","19:00:00","19:08:37"};
-//float a_elevacion[29] = {1,2.29,8.38,14.56,20.8,27.06,33.31,39.52,45.63,51.58,57.23,62.4,66.73,69.67,70.55,69.12,65.78,61.21,55.9,50.16,44.17,38.03,31.81,25.56,19.31,13.1,6.94,0.88,1};
-//float a_azimut[29] = {107.33,105.2,101.2,97.27,93.32,89.26,84.94,80.22,74.84,68.48,60.59,50.35,36.66,18.62,357.28,336.47,319.5,306.76,297.19,289.73,283.65,278.45,273.84,269.6,265.56,261.62,257.68,253.64,252.45};
-
-
 // Cada 20 minutos - 10 Diciembre 2021
 // Lo extraemos cada 20 min de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 // LO bajamos a excell copiamos a otra hoja y trasponemos columnas en filas y luego exportamos en CSV
-
-
-//int Id[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45};
-//String hora[45]={"4:25:59","4:40:00","5:00:00","5:20:00","5:40:00","6:00:00","6:20:00","6:40:00","7:00:00","7:20:00","7:40:00","8:00:00","8:20:00","8:40:00","9:00:00","9:20:00","9:40:00","10:00:00","10:09:00","10:40:00","11:00:00","11:20:00","11:40:00","12:00:00","12:20:00","12:40:00","13:00:00","13:20:00","13:40:00","14:00:00","14:20:00","14:40:00","15:00:00","15:20:00","15:40:00","16:00:00","16:20:00","16:40:00","17:00:00","17:20:00","17:40:00","18:00:00","18:20:00","18:40:00","18:45:21"};
-//String hora[45]={"4:25:59","4:26:00","4:27:00","4:28:00","4:29:00","4:30:00","4:31:00","4:32:00","4:33:00","4:34:00","4:35:00","4:36:00","4:37:00","4:38:00","4:39:00","4:40:00","4:41:00","4:42:00","4:43:00","4:44:00","4:45:00","4:46:00","4:47:00","4:48:00","4:49:00","4:50:00","4:51:00","4:52:00","4:53:00","4:54:00","4:55:00","4:55:00","4:56:00","4:57:00","4:58:00","4:59:00","5:00:00","5:01:00","5:02:00","5:03:00","5:04:00","5:05:00","5:06:21","5:07:21","5:08:21"};
-//float a_elevacion[45]={1, 1.76, 5.53, 9.38, 13.3, 17.27, 21.29, 25.36, 29.46, 33.59, 37.74, 41.9, 46.07, 50.24, 54.39, 58.52, 62.59, 66.56, 70.38, 73.92, 76.93, 78.98, 79.49, 78.24, 75.7, 72.41, 68.73, 64.83, 60.81, 56.71, 52.58, 48.41, 44.24, 40.08, 35.92, 31.78, 27.66, 23.58, 19.53, 15.53, 11.59, 7.7, 3.88, 1,1};
-//float a_azimut[45]={ 118.48, 116.56, 113.92, 111.37, 108.91, 106.5, 104.13, 101.78, 99.42, 97.04, 94.59, 92.03, 89.33, 86.4, 83.15, 79.45, 75.06, 69.65, 62.61, 52.95, 39.03, 19.12, 354.44, 331.31, 314.17, 302.36, 294.01, 287.78, 282.88, 278.82, 275.34, 272.25, 269.43, 266.8, 264.29, 261.87, 259.5, 257.15, 254.79, 252.41, 249.98, 247.48, 244.89, 242.2, 241.46};
-
-
-//-------------- 17 de Diciembre
-//int Id[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45};
-//Cada 1 minuto
-
-//String hora[45]={"4:25:00","4:26:00","4:26:30","4:27:00","4:27:30","4:30:00","4:31:00","4:32:00","4:33:00","4:34:00","4:35:00","4:36:00","4:37:00","4:38:00","4:39:00","4:40:00","4:41:00","4:42:00","4:43:00","4:44:00","4:45:00","4:46:00","4:47:00","4:48:00","4:49:00","4:50:00","4:51:00","4:52:00","4:53:00","4:54:00","4:55:00","4:55:00","4:56:00","4:57:00","4:58:00","4:59:00","5:00:00","5:01:00","5:02:00","5:03:00","5:04:00","5:05:00","5:06:21","5:07:21","5:08:21"};
-//mas rapido
-//String hora[45]={"4:25:00","4:26:00","4:26:30","4:27:00","4:27:30","4:28:00","4:28:30","4:29:00","4:30:00","4:30:30","4:31:00","4:31:30","4:32:00","4:32:30","4:33:00","4:33:30","4:34:00","4:34:30","4:35:00","4:35:30","4:36:00","4:36:30","4:37:00","4:37:30","4:38:00","4:38:30","4:39:00","4:39:30","4:40:00","4:40:30","4:41:00","4:41:30","4:42:00","4:42:30","4:43:00","4:43:30","4:44:00","4:44:30","4:45:00","4:45:30","4:46:00","4:46:30","4:47:00","4:47:30","4:48:00"};
-
-//String hora[45]={"6:27:54","6:40:00","7:00:00","7:20:00","7:40:00","8:00:00","8:20:00","8:40:00","9:00:00","9:20:00","9:40:00","10:00:00","10:09:00","10:40:00","11:00:00","11:20:00","11:40:00","12:00:00","12:20:00","12:40:00","13:00:00","13:20:00","13:40:00","14:00:00","14:20:00","14:40:00","15:00:00","15:20:00","15:40:00","16:00:00","16:20:00","16:40:00","17:00:00","17:20:00","17:40:00","18:00:00","18:20:00","18:40:00","19:00:00","19:20:00","19:40:00","20:00:00","20:20:00","20:50:00"};
-
-
-///-------------------------------------------------------------------------------------------------------------
-
-float a_elevacion[43]={1.39,5.14,8.96,12.86,16.82,20.82,24.87,28.96,33.08,37.22,41.38,45.55,49.72,53.88,58.02,62.11,66.12,70,73.63,76.81,79.12,79.94,78.93,76.5,73.26,69.59,65.7,61.68,57.58,53.44,49.28,45.11,40.94,36.78,32.64,28.53,24.44,20.4,16.4,12.45,8.56,4.74,1};
-float a_azimut[43]={119.01,117.35,114.7,112.15,109.68,107.28,104.92,102.58,100.24,97.88,95.47,92.97,90.32,87.48,84.35,80.8,76.62,71.51,64.91,55.88,42.81,23.63,358.59,333.98,315.53,302.99,294.28,287.87,282.88,278.79,275.29,272.19,269.37,266.75,264.26,261.85,259.49,257.16,254.82,252.45,250.04,247.57,245.01  };
-
 
 //--------------------------------------------------------------------------------------------------------------
 // Entradas LDR y temp
@@ -365,21 +311,6 @@ bool flag_giro_azim;
 #define Azimut_min_invierno 60
 #define Azimut_max_invierno 300
 
-
-///-----------------------------------------------------------------------------------------------------------------------
-// esta estamos usando
-// 17/10/2021
-// 19/10/2021
-
-
-//elevacion ((abs(dif_elevacion))*pasos_elevacion_1, flag_giro_elev);
-//--------------------------------------------------------------
-// Modificacion de funcion de azimut
-// 23/10/2021 esta estamos usando
-// 17/10/2021
-// 19/10/2021
-
-
 ///-----------------------------------------------------------------------------------------------------------------------
 // Se incluye libreria con todas las funciones
 // 
@@ -424,6 +355,7 @@ void setup()
   if (strlen(simPIN) && modem.getSimStatus() != 3 ) {
     modem.simUnlock(simPIN);
   }
+   configuracion_entrada_salida(); // Configuracion de entradas - salidas
 ///-----------------------------------------------------------------------------------------------------------------------
   preferences.begin("encoder", false);
 // Remove all preferences under the opened namespace
@@ -434,20 +366,16 @@ void setup()
   
 ///-----------------------------------------------------------------------------------------------------------------------
   sensors.begin(); // Inicializa el sensor de temperatura DS18B20
-  if (Simulacion==1){
-    inicializacion_vector();
-  }else{
-    inicializacion_vector_1();
-  }
 
 ///-----------------------------------------------------------------------------------------------------------------------
 //  rtc.adjust(DateTime(__DATE__,__TIME__)); // funcion que permite establecer fecha y horario
 //  ............... Formato.........................................
 //  rtc.adjust(DateTime(2021, mes, dia, hora, min, seg));
     //if (Simulacion==1) rtc.adjust(DateTime(2022,1,15,6,30, 0));
-   if (Simulacion==1) rtc.adjust(DateTime(2022,1,22,8,16, 0));
+//   if (Simulacion==1) rtc.adjust(DateTime(2022,1,22,20,5, 0));
+    //if (Simulacion==0) rtc.adjust(DateTime(2022,7,4,13,30, 0));
    if (Simulacion==0) rtc.adjust(DateTime(__DATE__,__TIME__));
-
+   //rtc.adjust(DateTime(2022,7,3,18,00, 0));
    DateTime fecha = rtc.now();
    Serial.print("RTC dentro del setup  ");
    Serial.print(fecha.day());
@@ -465,74 +393,21 @@ void setup()
    Serial.print(fecha.second());
    sec_rtc=fecha.second();
    Serial.println(" -->");
+//--------------------------------------------------------------------------------------------------------------------------
+// Esto es para salvar la situacion cuando esta 
+/*
+          encoder =270;
+          preferences.putUInt("encoder", encoder);
+          delay(500);
+          Serial.print("Encoder, en primera vez: ");
+          Serial.println(encoder);
+  */      
+//--------------------------------------------------------------------------------------------------------------------------   
    
-   configuracion_entrada_salida(); // Configuracion de entradas - salidas
    posicion ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc,0);
-  
-    encoder = preferences.getUInt("encoder", 0);
-    Serial.print("Buscando 90 elevacion....");
-    buscar_noventa_elevacion();
-    Serial.print("Buscando 0 elevacion....");
-    buscar_cero_elevacion();
-    //Serial.print("Buscando 180 azimut....");
-    //buscar_180_azimut(20);
-    Serial.print("Buscando cero azimut....");
-    Serial.println(encoder);
-     
-    if ((encoder>=0) && (encoder <=180)){
-      Serial.print("Buscar_cero 20 grados....");
-      buscar_cero_azimut(20);
-    }
-    if ((encoder<=360) && (encoder >=250)){
-      Serial.print("Buscar_cero 250 grados....");
-      buscar_cero_azimut(250);
-    }
+   posicionar_motores();
     
-   //motores_begin(); 
-   hora_max(43,1);
-   if (Simulacion==0){
-    analisis_posicion();
-   }
-   if (Simulacion==1){
-    ind=0;
-    ind_det=0;
-   }
-   //almacenamiento_vector(1);
-   //delay (6000);
-   
-     if (Simulacion==1){
-        hora_array_v[0]=8;
-        min_array_v[0]=17;
-     }else{
-        hora_array_v[0]=6;
-        min_array_v[0]=48;
-     }
-     
-   Serial.println("Dentro del setup - logica deberia empezar en ind:  ");
-   Serial.print(ind);
-   Serial.print("ind_det:  ");
-   Serial.println(ind_det);
-   
-     if (Simulacion==1){
-        hora_array_v[0]=8;
-        min_array_v[0]=17;
-     }else{
-        hora_array_v[0]=6;
-        min_array_v[0]=48;
-     }
-     
-   Serial.print(hora_array_v[ind]);
-   Serial.print(":");
-   Serial.println (min_array_v[ind]);
-   delay (2000);
-   
-   //delay(25000);
-   iAN0=61;                        // Codigo que sabemos que viene del setup
-   iAN1=hora_array_v[ind];         // Aprovecho informo cuando va a moverse
-   iAN2=min_array_v[ind];          // Idem
-   iAN3=ind_det;                   // Informo el ind_det
-   if (Simulacion==0)envia(); // Envia a la hora que va arrancar 
-}
+} // setup
 
 
 ///-----------------------------------------------------------------------------------------------------------------------
@@ -542,8 +417,7 @@ void setup()
 
 void loop() 
 {
-
-///-----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 // antes de amanecer formula de salida de sol y puesta de sol se hace calibración
 // 1_ Hace cero de elevacion 
 // 2_ Hace 90 grados de elevacion
@@ -554,30 +428,27 @@ void loop()
 // Posiciona 
 // Ajuste fino Ldr!!!
 
-   DateTime fecha = rtc.now();
-   Serial.print("RTC   ");
-   Serial.print(fecha.day());
-   Serial.print('/');
-   Serial.print(fecha.month());
-   Serial.print('/');
-   Serial.print(fecha.year());
-   Serial.print(" ");
-   Serial.print(fecha.hour());
-   Serial.print(':');
-   hora_rtc=fecha.hour();
-   Serial.print(fecha.minute());
-   Serial.print(':');
-   min_rtc=fecha.minute();
-   Serial.print(fecha.second());
-   sec_rtc=fecha.second();
-   Serial.println(" -->");
-   encoder = preferences.getUInt("encoder", 0);
-   Serial.print("Encoder: ");
-   Serial.print(encoder);
-   Serial.println(version_esp32);
-   
-   
-
+    DateTime fecha = rtc.now();
+    Serial.print("RTC   ");
+    Serial.print(fecha.day());
+    Serial.print('/');
+    Serial.print(fecha.month());
+    Serial.print('/');
+    Serial.print(fecha.year());
+    Serial.print(" ");
+    Serial.print(fecha.hour());
+    Serial.print(':');
+    hora_rtc=fecha.hour();
+    Serial.print(fecha.minute());
+    Serial.print(':');
+    min_rtc=fecha.minute();
+    Serial.print(fecha.second());
+    sec_rtc=fecha.second();
+    Serial.print(" -->");
+    encoder = preferences.getUInt("encoder", 0);
+    Serial.print("Encoder: ");
+    Serial.print(encoder);
+    Serial.println(version_esp32);
 // -----------------------------------------------------------------
 // Tomo las lecturas de la LDr y la asigno al vector
 
@@ -598,163 +469,220 @@ void loop()
  
 // -----------------------------------------------------------------
 // lamo funcion de impresion de AN's
-
-  print_AN();
-/*
-  Serial.print("ind:  ");
-  Serial.println(ind);
-  Serial.print("ind_det:  ");
-  Serial.println(ind_det); 
-  */
-   
-// debo hacer la diferencia del estado anterior
-// Aqui saco la diferencia si el puntero i>=0 comienzo y voy teniendo en cuenta el valor anterior
-//
+   print_AN();
 //-----------------------------------------------------------------------------------------------
-// Tomo la hora actual
-// Paso hora y min lat y long y saco la hora que amanece y atardece
 int $utc=-3;
-int $year=2022;
-int $month=1;
-int $day=22;
-//hora_array=8;
-//min_array=;
-//hora_rtc
-//int hora_array;   // Variable global
-//int min_array;    // Variable global
-//int seg_array;    // Variable global
-//elevacion_gral;   // Variable global
-//azimut_gral;      // Variable global
+
 //-------------------------------------------------------------------------------------------------------
 // Analisis de fecha
 
-  Serial.print("Hora rtc (Actual):  ");
-  Serial.println(hora_rtc);
-  Serial.print("Min rtc (Actual):  ");
-  Serial.println(min_rtc);
-  // Llamada a la funcion traigp la hora y minutos de amanece y atardece
-  posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
-  /*
-  Serial.print("Amanece antes de la funcion  ");
-  Serial.println(amanece);
-  Serial.print("Atardece antes de la funcion  ");
-  Serial.println(atardece);
-  */
-  
-  hora_dec(amanece,"Amanece  ");
-  hora_amanece=hora_global;
-  min_amanece=min_global;
-  /*
-  Serial.print("Amanece a hora  ");
-  Serial.println(hora_amanece);
-  Serial.print("min  ");
-  Serial.println(min_amanece);
-  */
-  hora_dec(atardece,"Atardece ");
-  hora_atardece=hora_global;
-  min_atardece=min_global;
-/*
-  Serial.print("Atardece a hora  ");
-  Serial.println(hora_atardece);
-  Serial.print("min  ");
-  Serial.println(min_atardece);
-  
+Serial.print("Hora/Min rtc (Actual):  ");
+Serial.print(hora_rtc);
+Serial.print(" : ");
+Serial.println(min_rtc);
+// Llamada a la funcion traigo la hora y minutos de amanece y atardece
+posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
 
-  Serial.print("Duracion dia  ");
-  Serial.println(duracion_dia);
-*/
+hora_dec(amanece,"Amanece  ",1);
+hora_amanece=hora_global;
+min_amanece=min_global;
+hora_dec(atardece,"Atardece ",1);
+hora_atardece=hora_global;
+min_atardece=min_global;
 
 //-------------------------------------------------------------------------------------------------------
 // Estamos en el dia ????
 
-  if (hora_rtc>=hora_amanece){
-    //if (min_rtc>=min_amanece){
-      Serial.print("Estamos mas alla de la hora del amanecer  ");
-      Serial.println();
-      flag_amanece=1; 
-    }else{
-      flag_amanece=0;
-    }
+    if (hora_rtc>=hora_amanece){
+        if (min_rtc>=min_amanece){
+           Serial.print("hs amanece min_rtc>min_amanece  ");
+           Serial.println();
+           flag_amanece=1; 
+          }else{
+           Serial.print("hs amanece min_rtc<min_amanece ");
+           Serial.println();
+           flag_amanece=1;
+          } 
+      }else{
+        flag_amanece=0;
+      }
+        
     
-    if (hora_rtc<=hora_atardece){
-     // if (min_rtc<=min_atardece){
-        Serial.print("Por debajo de la hora de atardecer  ");
-        Serial.println();
-        flag_atardece=1;
-     }else{
-      flag_atardece=0;
-    }
+      if (hora_rtc<=hora_atardece){
+       if (min_rtc<=min_atardece){
+        //Serial.print("Por debajo de la hora de atardecer  ");
+        //Serial.println();
+          flag_atardece=1;
+        }else{
+          flag_atardece=1;
+        }
+      
+      }else{
+          flag_atardece=0;
+      }
   
-
-//int flag_primera_vez_dia=0;
-//int flag_amanece=0;
-//int flag_atardece=0;
-
+  
+// -------------------------------------------------------------------------------------------------------------------
 // Estamos en el dia...................................................
  if ((flag_amanece==1)&&(flag_atardece==1)){
       Serial.print("Estoy en el dia  ");
+      //posicionar_motores(); Estaba aca!!! y no funciona bien
+      // Aqui debo calibrar el sistema
+      // config_movimiento();
+      
       Serial.println();
-       if (flag_primera_vez_dia==0){
-         Serial.print("primera vez  ");
+      //--------------------------------------------------------------------------------------------------------------
+      // Si es la primera vez-----------------------------------------------------------------------------------------
+      if (flag_primera_vez_dia==0){
+          posicionar_motores();
+         flag_giro_elev=1;
+         min_noche=0;
+         Serial.print("es la primera vez  ");
          Serial.println();
          posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
          elevacion_gral_a_1=elevacion_gral;
          azimut_gral_a_1=azimut_gral;
-
-         Serial.print("Elevacion  ");
-         Serial.println(elevacion_gral_a_1);
-     
-         Serial.print("Azimut  ");
-         Serial.println(azimut_gral_a_1);
-         flag_primera_vez_dia=flag_primera_vez_dia+1;
-         Serial.print("Flag  ");
-         Serial.println(flag_primera_vez_dia);
          
-       }else{
-          Serial.print("next  ");
+         Serial.print(" Azimut gral 1 vez  ");
+         Serial.print(azimut_gral);
+         Serial.print(" Azimut_gral_a_1 1 vez: ");
+         Serial.println(azimut_gral_a_1);
+     
+         if (azimut_gral>=0 && azimut_gral<=180){
+          dif_azi=azimut_gral_a_1;
+          flag_giro_azim=1;
+         }
+     
+         
+         if (azimut_gral<=360 && azimut_gral>=240){
+          azimut_gral_a_1=azimut_gral;
+          dif_azi=360-azimut_gral_a_1;
+          flag_giro_azim=0;
+         }
+        
+         Serial.print("Elevacion  ");
+         Serial.print(elevacion_gral_a_1);
+     
+         Serial.print("  - Azimut  :");
+         Serial.print(azimut_gral_a_1);
+         Serial.print("  -  Flag giro elev:  ");
+         Serial.print(flag_giro_elev);
+         Serial.print("  - Flag giro azimut: ");
+         Serial.print(flag_giro_azim);
+         Serial.print("  - dif azimut: ");
+         Serial.println(dif_azi);       
+         flag_primera_vez_dia=flag_primera_vez_dia+1;
+         Serial.print("  - Count_1 ");
+         Serial.print(flag_primera_vez_dia);
+        
+        // Almaceno el valor del azimut
+          encoder = azimut_gral_a_1;
+          preferences.putUInt("encoder", encoder);
+          delay(500);
+          Serial.print(" -Encoder, 1 vez: ");
+          Serial.println(encoder);
+          Serial.println(" -------------------------------------------------------------------------------------------------------------");
+        // Movimiento de motres............................................................... 
+          elevacion (elevacion_gral_a_1*pasos_elevacion_1, flag_giro_elev);
+         //azimut (azimut_gral_a_1*pasos_azimut_1,flag_giro_azim); // Poner en cero
+         azimut ((abs(dif_azi))*pasos_azimut_1,flag_giro_azim); // Poner en cero
+         Serial.println("Retardo 10 min ");
+         envia(); 
+         retardo_10_min();
+         
+      }else{ // next time 
+         // Aqui va estra siempre en general............
+          Serial.print("next...  ");
           Serial.println();
         // Aqui estamos incremando .....
-         posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
-         //Serial.print("Elevacion..na  ");
-         //Serial.println(elevacion_gral);
-         //Serial.print("Azimut..na  ");
-         //Serial.println(azimut_gral);
-         // Me da el mismo valor eleva y azimut no se que pasa
-         azimut_gral_a_2=azimut_gral;
-         elevacion_gral_a_2=elevacion_gral;
+          posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
+          azimut_gral_a_2=azimut_gral;
+          elevacion_gral_a_2=elevacion_gral;
+         // alamaceno en el encoder
+          encoder = azimut_gral;
+          preferences.putUInt("encoder", encoder);
+          delay(500);
+          Serial.print(" Encoder,next: ");
+          Serial.print(encoder);   
          
-      
-         Serial.print("Elevacion..  ");
-         Serial.println(elevacion_gral_a_2);
-         Serial.print("Azimut..  ");
-         Serial.println(azimut_gral_a_2);
-         dif_ele= elevacion_gral_a_2-elevacion_gral_a_1;
-         dif_azi=azimut_gral_a_2-azimut_gral_a_1;
-         flag_primera_vez_dia=flag_primera_vez_dia+1;
-         Serial.print("Dif Elevacion..  ");
-         Serial.println(dif_ele);
-         Serial.print("Dif Azimut..  ");
-         Serial.println(dif_azi);
-         Serial.print("Flag  ");
-         Serial.println(flag_primera_vez_dia);
-         elevacion_gral_a_1=elevacion_gral_a_2;
-         azimut_gral_a_1=azimut_gral_a_2;
-       }
-      
- }else{
-  flag_primera_vez_dia=0; // reseteo el flag
- }
-//-------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------
+            
+          dif_ele=(elevacion_gral_a_2-elevacion_gral_a_1);
+          dif_azi=(azimut_gral_a_2-azimut_gral_a_1);
+          
+            if (dif_azi>=300){
+              dif_azi=360-dif_azi;
+            }
+    /*
+            if (dif_azi>=200){
+              dif_azi=(azimut_gral_a_1-azimut_gral_a_2);
+            }
+      */      
+            if (dif_ele<=0)flag_giro_elev=0;
+            if (dif_ele>=0)flag_giro_elev=1;
+            if (dif_azi<=0)flag_giro_azim=0;
+         
+          Serial.print(" Elevacion..  ");
+          Serial.print(elevacion_gral_a_2);
+          Serial.print("  - Azimut..  ");
+          Serial.print(azimut_gral_a_2);
+          
+          //dif_ele= elevacion_gral_a_2-elevacion_gral_a_1;
+          //dif_azi=azimut_gral_a_2-azimut_gral_a_1;
+          flag_primera_vez_dia=flag_primera_vez_dia+1;
+        
+          Serial.print(" - Dif Elev..  ");
+          Serial.print(dif_ele);
+          Serial.print(" - Flag gi ele:  ");
+          Serial.print(flag_giro_elev);
+        
+          Serial.print("  - Dif Azi..  ");
+          Serial.print(dif_azi);
+          Serial.print(" - Flag gi azi: ");
+          Serial.print(flag_giro_azim);
+          Serial.print(" Count:  ");
+          Serial.print(flag_primera_vez_dia);
+          Serial.print(" Amanece flag:  ");
+          Serial.print(flag_amanece);
+          Serial.print(" Atardece flag:  ");
+          Serial.println(flag_atardece);
 
-
-
-//-------------------------------------------------------------------------------------------------------
-// duracion_dia=$Sunlight_duration;
-
-
-//-------------------------------------------------
-// Aqui comparo y saco los deltas
-//  comparacion(); // Funciona OK
-//-------------------------------------------------  
-  delay(60000);
-}
+        //ANtes de mover puedo hacer una validadcion de elevacion y azimut a partir de la  historia
+        // Movimiento de motres...............................................................
+          elevacion ((abs(dif_ele))*pasos_elevacion_1, flag_giro_elev);
+          azimut ((abs(dif_azi))*pasos_azimut_1,flag_giro_azim); // Poner en cero
+        
+          elevacion_gral_a_1=elevacion_gral_a_2;
+          azimut_gral_a_1=azimut_gral_a_2;
+          Serial.println("Retardo 10 min ");
+          Serial.println(" -------------------------------------------------------------------------------------------------------------");
+          Serial.println(" ");
+          Serial.println(" ");
+          //Serial.println(flag_primera_vez_dia);
+          envia();
+          retardo_10_min();
+      } // next time
+   
+ }else{  //if ((flag_amanece==1)&&(flag_atardece==1)){
+    flag_primera_vez_dia=0; // reseteo el flag
+    // Aqui deberia haber una funcion que reporte cada una hora que esta en modo Noche
+    // Contador
+    Serial.print(" Contador de minutos nocturnos ");
+    Serial.println(min_noche);
+    delay (60000); // espera 1 minuto
+    min_noche=min_noche+1;
+    if (min_noche==2){
+        iAN0 =62; //Codigo dentro de alive
+        envia();
+    }
+    if (min_noche==60){
+        Serial.println(" -------------------------------------------------------------------------------------------------------------");
+        Serial.println("  Estamos de noche.... envio señales que estoy vivo!! ");
+        Serial.println(" -------------------------------------------------------------------------------------------------------------");
+        iAN0 =62; //Codigo dentro de alive
+        envia();
+        min_noche=0;
+    }
+ }// if ((flag_amanece==1)&&(flag_atardece==1)){
+ 
+} // Loop
