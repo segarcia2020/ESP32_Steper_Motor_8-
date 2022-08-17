@@ -24,8 +24,8 @@ void imprima_fecha_encoder(){
     Serial.println(version_esp32);
 }
 
-void retardo_10_min(){
-  for(int i=0;i<=10;i++){
+void retardo_en_min(int min){
+  for(int i=0;i<=min;i++){
     delay (60000);//60000
   }
 }
@@ -316,14 +316,10 @@ int data[dataLenght];
 // Envia informacion via mensaje
 // 
 
-
-void envia_mensaje_sms(String tel, float tempC){
+void envia_mensaje_sms(String tel, float tempC, int dia, int mes, int ano, int hora, int minuto ){
 //--------------------------------------------------------
     // To send an SMS, call modem.sendSMS(SMS_TARGET, smsMessage)
-   String smsMessage = "Ambar Reporta, estación : "+ String(Serie)+ " la temp es  " + String(tempC);
-    // Aqui podemos agregar un boton de llamada de emergencia
-    // Pulsamos un boton y podemos enviar un mensaje !!!!!    
-
+   String smsMessage = "Ambar Reporta, estacion : "+ String(Serie)+ " la temp es  " + String(tempC)+ " a las "+String(hora)+":"+String(minuto)+" del "+String(dia)+"/"+String(mes)+"/"+String(ano);
     if(modem.sendSMS(tel, smsMessage)){
         SerialMon.println(smsMessage);
     }else{
@@ -354,9 +350,7 @@ void envia() {
       SerialMon.println(" OK");
       // Making an HTTP POST request
       SerialMon.println("Performing HTTP POST request...");    
-       //String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie)+"&temp=" +String(tempC)+"&cam1=" +String(hora_rtc)+"&cam2=" +String(min_rtc)+"&cam3=" +String(encoder);
-        String datos = "&elevacion=" + String(elevacion_gral) + "&azimut=" + String(azimut_gral)+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie)+"&temp=" +String(tempC)+"&cam1=" +String(hora_rtc)+"&cam2=" +String(min_rtc)+"&cam3=" +String(encoder);
-      //String datos = "&elevacion=" + String(2.29) + "&azimut=" + String(105.20)+ "&an0=" + String(100) + "&an1=" + String(200) + "&an2=" + String(300)+"&an3=" + String(400) +"&Serie=" +String(500);
+      String datos = "&elevacion="+String(elevacion_gral)+"&azimut="+String(azimut_gral)+"&an0="+String(iAN0)+"&an1="+String(iAN1)+"&an2="+String(iAN2)+"&an3="+String(iAN3)+"&Serie="+String(Serie)+"&temp="+String(tempC)+"&cam1="+String(hora_rtc)+"&cam2="+String(min_rtc)+"&cam3="+String(encoder)+"&cam4="+String(version_esp);
       SerialMon.println(datos);
       SerialMon.print(F("Performing HTTPS GET request... "));
       http.connectionKeepAlive();  // Currently, this is needed for HTTPS
@@ -470,22 +464,9 @@ void temporizador() {
       // Para usar BME
       // displaybme();
       String datos =" "; 
-      // String datos = "&satelites=" + String(satelites) + "&velocidad=" + String(velocidad)+ "&curso=" + String(curso) + "&altitud=" + String(altitud) + "&latitud=" + String(latitud,6) +"&Serie=" +String(serie) + "&longuitud=" + String(longuitud,6);
-     
-      
-      //$sql ="INSERT INTO `stirling_1` (`ID`, `fecha`, `Serie`, `elevacion`, `azimut`, `an0`, `an1`, `an2`, `an3`, `temp`, `cam1`, `cam2`, `cam3`, `cam4`, `cam5`) VALUES (NULL, CURRENT_DATE(), '100', '23.56', '189.00', '123', '145', '156', '167', '200', '0', '0', '0', '0', '0')";
-      //a_elevacion[ind],abs(dif_elevacion),flag_giro_elev,a_azimut[ind]
-      
+      //String datos = "&satelites=" + String(satelites) + "&velocidad=" + String(velocidad)+ "&curso=" + String(curso) + "&altitud=" + String(altitud) + "&latitud=" + String(latitud,6) +"&Serie=" +String(serie) + "&longuitud=" + String(longuitud,6);
       //String datos = "&elevacion=" + String(a_elevacion[ind]) + "&azimut=" + String(a_azimut[ind])+ "&an0=" + String(iAN0) + "&an1=" + String(iAN1) + "&an2=" + String(iAN2)+"&an3=" + String(iAN3) +"&Serie=" +String(Serie);
-      //String datos = "&elevacion=" + String(2.29) + "&azimut=" + String(105.20)+ "&an0=" + String(100) + "&an1=" + String(200) + "&an2=" + String(300)+"&an3=" + String(400) +"&Serie=" +String(500);
-      // Prepare your HTTP POST request data (Temperature in Fahrenheit degrees)
-      // Para BME250 --- String httpRequestData = "api_key=" + apiKeyValue + "&value1=" + String(1.8 * bme.readTemperature() + 32)
-      //                       + "&value2=" + String(bme.readHumidity()) + "&value3=" + String(bme.readPressure()/100.0F) + "";
-      //temp_string=String(1.8 * bme.readTemperature()
-               
-      // You can comment the httpRequestData variable above
-      // then, use the httpRequestData variable below (for testing purposes without the BME280 sensor)
-      // String httpRequestData = "api_key=tPmAT5Ab3j7F9&value1=24.75&value2=49.54&value3=1005.14";
+      
       SerialMon.println(datos);
       SerialMon.print(F("Performing HTTPS GET request... "));
       http.connectionKeepAlive();  // Currently, this is needed for HTTPS

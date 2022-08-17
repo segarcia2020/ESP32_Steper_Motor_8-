@@ -550,7 +550,7 @@ void comparacion(){
 }
 
 // Aqui esta la Matematica original
-/*
+/* Por si quieren modificar y ajustar
 //------------------------------------------------------------------------------------------------------------
 // Posicion
 // Funcion: double posicion (double $lat_deg,double $lon_deg,int $utc,int $year,int $month,int $day,int $hour,int $min, int imp){

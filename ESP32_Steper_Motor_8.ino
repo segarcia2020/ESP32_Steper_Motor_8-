@@ -1,12 +1,11 @@
 /*
     
-  Autor : Sergio Garcia
+  Autor : Sergio E. Garcia
   Agosto-Septiembre-Octubre 2021
   Enero-Febrero- Marzo 2022
   Junio 2022
   Origin ESP32 Steper Motor _2
   Origin Matematica de traslado solar/ Matematica Stirling
-
   Pretende hacer un viaje entre un Elevacion y azimut
   12 valores
   Pagina
@@ -30,13 +29,17 @@
   iAN0=62;                          // Estamos en alive
   iAN0=63;                          // A desarrollar
 
-  SIMULACION  "1" se programa RTC a 22/1/2022  - 8:16 hs
+  SIMULACION  "1" se programa RTC a 22/1/2022  - 8:16 hs u otra fecha
   
   Manejo de programas Matematico en internet
   Carpeta local
   C:\Users\sgarcia\Downloads\00000_web\ambaracs.com\calculo_solar
   
   Internet: https://ambaracs.com/Calculo_Solar/
+
+
+ESP Version 8: esta version es autonoma, toma la fecha y la hora del RTC y calcula a partir de la matemateco desarralloda
+el azimut y elevacion, ademas calcula la hora y minuto de cuando amanece y atardece
 
   Programas en php:
   calculo_solar_v2 y calculo_solar_v1 : Superados
@@ -47,6 +50,15 @@
   f.html ---> calculo_solar.php
   formulario.html  --> calculo_solar_v2.php
   s.html --> calculo_solar_v3.php  // Este deberia ser OK
+  
+//---------------------------------------------------------------------------------
+
+Julio 2022 Armado de la pagina para visualizar donde esta el dispositivo
+https://wegab.cl/s.php
+Informacion grafica y de estado del dispositivo, encoder_digital y temperatura
+Fecha y hora del servidor
+
+//---------------------------------------------------------------------------------
 
   RECOMENDACIÖN!!!!!!
   COMPILACION!!!!!!!! sacar el cable naranja que conecta el pcb a el modulo RTC!!!!!
@@ -54,7 +66,15 @@
   Este modificacion fue relaizada en 21/6/2022 9:14 hs
 
   Link en Github : https://github.com/segarcia2020/ESP32_Steper_Motor_7.git
-   
+
+Las consideraciones de ubicacion del dispositivo son:
+
+Latitude (+ to N)  -33,4377756
+Longitude (+ to E)  -70,65045027
+Time Zone (+ to E)  -3
+
+SIM Serie 500 -  Nro. +5693339 2522 (Movistar)
+
 */
 
 #include <Arduino.h>
@@ -62,10 +82,11 @@
 #include <Wire.h> // Manejo de dispositivos cableados
 ///-------------------------------------------------------------------------------------------------------
 // Para usa el sensor de temperatura ds18b20
-#include <OneWire.h>
 #include <DallasTemperature.h>
+#include <OneWire.h>
+
 // GPIO where the DS18B20 is connected to
-const int oneWireBus = 32;   
+const int oneWireBus = 22; //32;   
 float tempC;
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(oneWireBus);  
@@ -99,13 +120,15 @@ unsigned long tiempoConsulta = 60000; //4 min 240000 - cada 3 minutos 180000
 // The TinyGPS++ object
 TinyGPSPlus gps;
 #define SMS_TARGET_1  "+56966897241"
-#define SMS_TARGET_2  "+56977945690"
+#define SMS_TARGET_2  "+56962493724"
 
 ///-------------------------------------------------------------------------------------------------------
 //      SIMULACION y Version !!
 //
 #define Simulacion 0   // 0 sin simulacion, 1 con simulacion
 #define version_esp32 " - V: EPS32_Steper_Motor_8"
+
+
 //
 ///-------------------------------------------------------------------------------------------------------
 
@@ -132,24 +155,9 @@ int contconexion = 0;
 char host[55];
 int Serie=500;
 
-//const int  port = 443;   
-//char host[55];
-// Nuestra pagina nuestra plataforma
-//const char server[] = "ambaracs.com";
-//const char resource[] = "https://ambaracs.com/bomba_stirling.php"; 
-//const int  port = 443;  
-
 const char server[] = "wegab.cl";
 const char resource[] = "https://wegab.cl/bomba_stirling.php"; 
 const int  port = 443; 
-//String strhost = "ambaracs.com";
-//String strurl = "https://ambaracs.com/stirling_1.php"; //bomba_stirling.php
-//String strurlcon = "https://ambaracs.com/consulta_php.php";
-//consulta_php1.php
-//String strhost = "wegab.cl";
-//String strurl = "https://wegab.cl/station_pm.php";
-//String strurlcon = "https://wegab.cl/consulta_php.php";
-//--------------------------------------------
 
 #ifdef DUMP_AT_COMMANDS
   #include <StreamDebugger.h>
@@ -177,7 +185,7 @@ HttpClient http(client, server, port);  // Esto tambien
 // Libreria para manejar el RTC
 #include <RTClib.h>
 #define I2C_SDA            21 
-#define I2C_SCL            22
+#define I2C_SCL            32
 RTC_DS3231 rtc;
 String daysOfTheWeek[7] = { "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado" };
 String monthsNames[12] = { "Enero", "Febrero", "Marzo", "Abril", "Mayo",  "Junio", "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre" };
@@ -217,12 +225,13 @@ float elevacion_gral_a_1;
 float azimut_gral_a_1;
 float elevacion_gral_a_2;
 float azimut_gral_a_2;
-
+//-------------------------------------------------------------------------------------------------------
+// Datos donde esta ubicado el dispositivo
 double $lat_deg = -33.4377756;  //  
 double $lon_deg = -70.65045027; //  radianes
 int $utc=-3;  
-//float $Sunrise_Time ; // Amanece
-//float $Sunset_Time;   // Artardece
+float version_esp=8.00;
+//--------------------------------------------------------------------------------------------------------
 float amanece ; // Amanece
 float atardece;   // Artardece
 float duracion_dia;
@@ -241,7 +250,7 @@ int flag_atardece=0;
 float dif_ele;
 float dif_azi;
 int min_noche=0;
-
+int ret_min=3;
 //--------------------------------------------------------------------------------------------------------------
 // Manejo de arreglos extraido de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 //
@@ -256,7 +265,7 @@ float a_azimut_15[46]={116.16,114.58,111.92,109.34,106.84,104.38,101.95,99.53,97
 // Cada 20 minutos - 10 Diciembre 2021
 // Lo extraemos cada 20 min de la pagina https://www.sunearthtools.com/dp/tools/pos_sun.php?lang=es#top
 // LO bajamos a excell copiamos a otra hoja y trasponemos columnas en filas y luego exportamos en CSV
-
+// Esta logica esta superada
 //--------------------------------------------------------------------------------------------------------------
 // Entradas LDR y temp
 #define AN0 0
@@ -270,10 +279,12 @@ float an3[indice_max];
 
 ///------------------------------------------------------------------------------------------------------------
 // Manejo de pines para driver A4988
+
 // Driver motor elevacion
 #define STEP_ME 33      // Donde estaba el led Verde - pin STEP de A4988 a pin 4
 #define DIR_ME 25       // Donde estaba el led Rojo - pin DIR de A4988 a pin 5
 #define E_ME 2          // estaba en 18 (19/10/2021) 23 estaba
+
 // Driver motor azimut
 #define STEP_MA 19      // Donde estaba el led Verde - pin STEP de A4988 a pin 4
 #define DIR_MA 18       // Donde estaba el led Rojo - pin DIR de A4988 a pin 5
@@ -328,13 +339,19 @@ bool flag_giro_azim;
 
 void setup() 
 {
+///-----------------------------------------------------------------------------------------------------------------------  
   SerialMon.begin(115200);
+  
+  pinMode( oneWireBus, OUTPUT);
+  digitalWrite( oneWireBus, HIGH);
+  sensors.begin(); // Inicializa el sensor de temperatura DS18B20
+  
 // Inicializar el RTC ///-------------------------------------------------------------------------------------------------
-  Wire.begin(I2C_SDA, I2C_SCL); 
-  if (!rtc.begin()) {
-      Serial.println(F("Couldn't find RTC"));
-     //while (1);
-  }
+    Wire.begin(I2C_SDA, I2C_SCL); 
+    if (!rtc.begin()) {
+        Serial.println(F("Couldn't find RTC"));
+       //while (1);
+    }
 
 ///-----------------------------------------------------------------------------------------------------------------------
 // Set GPRS
@@ -364,17 +381,16 @@ void setup()
 // Note: Key name is limited to 15 chars.
 // encoder = preferences.getUInt("encoder", 0);
   
-///-----------------------------------------------------------------------------------------------------------------------
-  sensors.begin(); // Inicializa el sensor de temperatura DS18B20
 
 ///-----------------------------------------------------------------------------------------------------------------------
 //  rtc.adjust(DateTime(__DATE__,__TIME__)); // funcion que permite establecer fecha y horario
 //  ............... Formato.........................................
+// Aqui algunos ejemplos por si quieren ajustar a una determinada fecha como por ejemplo simular extremos Verano e Invierno
 //  rtc.adjust(DateTime(2021, mes, dia, hora, min, seg));
-    //if (Simulacion==1) rtc.adjust(DateTime(2022,1,15,6,30, 0));
-//   if (Simulacion==1) rtc.adjust(DateTime(2022,1,22,20,5, 0));
-    //if (Simulacion==0) rtc.adjust(DateTime(2022,7,4,13,30, 0));
-   if (Simulacion==0) rtc.adjust(DateTime(__DATE__,__TIME__));
+//  if (Simulacion==1) rtc.adjust(DateTime(2022,1,15,6,30, 0));
+//  if (Simulacion==1) rtc.adjust(DateTime(2022,1,22,20,5, 0));
+if (Simulacion==1) rtc.adjust(DateTime(2022,8,14,10,30, 0));
+if (Simulacion==0) rtc.adjust(DateTime(__DATE__,__TIME__));
    //rtc.adjust(DateTime(2022,7,3,18,00, 0));
    DateTime fecha = rtc.now();
    Serial.print("RTC dentro del setup  ");
@@ -393,9 +409,17 @@ void setup()
    Serial.print(fecha.second());
    sec_rtc=fecha.second();
    Serial.println(" -->");
+
 //--------------------------------------------------------------------------------------------------------------------------
-// Esto es para salvar la situacion cuando esta 
-/*
+// Esto es para salvar la situacion cuando esta en algun posiscion que queremos sacar Ajustamos forzamos el encoder digital a
+// otra posicion.
+// Ejemplo: 
+// 1.En campo vemos que el azimut esta en 250 y nos estamos seguro cual fue el ultimo encoder almacenado, forzamos 
+// la variable encoder= 250 y subimos el programa.
+// 2. una vez que empieza a funcionar comentamos esta rutina entre /*5 y subimos denuevo el programa
+// 3. POdemos saber el valor del encoder en la pagina https://wegab.cl/s.php
+
+/*5
           encoder =270;
           preferences.putUInt("encoder", encoder);
           delay(500);
@@ -406,7 +430,15 @@ void setup()
    
    posicion ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc,0);
    posicionar_motores();
-    
+
+//--------------------------------------------------------------------------------------------------------------------------   
+// Leo temperatura en grados centigrados DS18B20
+  sensors.requestTemperatures(); 
+  tempC = sensors.getTempCByIndex(0);
+  delay(1000);
+  envia_mensaje_sms(SMS_TARGET_2, tempC,fecha.day(),fecha.month(),fecha.year(),hora_rtc,min_rtc);
+  Serial.print("Mensaje sms enviado");
+  Serial.println();
 } // setup
 
 
@@ -461,12 +493,13 @@ void loop()
   iAN3=analogRead(AN3);
   an3[ind]=iAN3;
 // -----------------------------------------------------------------
-// Leo temperatura en grados centigrados
+// Leo temperatura en grados centigrados DS18B20
 
   sensors.requestTemperatures(); 
   tempC = sensors.getTempCByIndex(0);
-  delay(350);
- 
+  delay(1000);
+  Serial.print(" D18B20: ");
+  Serial.println(tempC);
 // -----------------------------------------------------------------
 // lamo funcion de impresion de AN's
    print_AN();
@@ -480,6 +513,7 @@ Serial.print("Hora/Min rtc (Actual):  ");
 Serial.print(hora_rtc);
 Serial.print(" : ");
 Serial.println(min_rtc);
+
 // Llamada a la funcion traigo la hora y minutos de amanece y atardece
 posicion_ab ($lat_deg,$lon_deg,$utc,fecha.year() ,fecha.month(),fecha.day(),hora_rtc,min_rtc);
 
@@ -495,16 +529,16 @@ min_atardece=min_global;
 
     if (hora_rtc>=hora_amanece){
         if (min_rtc>=min_amanece){
-           Serial.print("hs amanece min_rtc>min_amanece  ");
+           Serial.print("hs amanece min_rtc > min_amanece  ");
            Serial.println();
            flag_amanece=1; 
           }else{
-           Serial.print("hs amanece min_rtc<min_amanece ");
+           Serial.print("hs amanece min_rtc < min_amanece ");
            Serial.println();
            flag_amanece=1;
           } 
       }else{
-        flag_amanece=0;
+          flag_amanece=0;
       }
         
     
@@ -526,6 +560,7 @@ min_atardece=min_global;
 // Estamos en el dia...................................................
  if ((flag_amanece==1)&&(flag_atardece==1)){
       Serial.print("Estoy en el dia  ");
+      
       //posicionar_motores(); Estaba aca!!! y no funciona bien
       // Aqui debo calibrar el sistema
       // config_movimiento();
@@ -584,11 +619,10 @@ min_atardece=min_global;
           Serial.println(" -------------------------------------------------------------------------------------------------------------");
         // Movimiento de motres............................................................... 
           elevacion (elevacion_gral_a_1*pasos_elevacion_1, flag_giro_elev);
-         //azimut (azimut_gral_a_1*pasos_azimut_1,flag_giro_azim); // Poner en cero
-         azimut ((abs(dif_azi))*pasos_azimut_1,flag_giro_azim); // Poner en cero
-         Serial.println("Retardo 10 min ");
-         envia(); 
-         retardo_10_min();
+          azimut ((abs(dif_azi))*pasos_azimut_1,flag_giro_azim); // Poner en cero
+          Serial.println("Retardo en min ");
+          envia(); 
+          retardo_en_min(ret_min);
          
       }else{ // next time 
          // Aqui va estra siempre en general............
@@ -654,13 +688,13 @@ min_atardece=min_global;
         
           elevacion_gral_a_1=elevacion_gral_a_2;
           azimut_gral_a_1=azimut_gral_a_2;
-          Serial.println("Retardo 10 min ");
+          Serial.println("Retardo en min ");
           Serial.println(" -------------------------------------------------------------------------------------------------------------");
           Serial.println(" ");
           Serial.println(" ");
           //Serial.println(flag_primera_vez_dia);
           envia();
-          retardo_10_min();
+          retardo_en_min(ret_min);
       } // next time
    
  }else{  //if ((flag_amanece==1)&&(flag_atardece==1)){
